@@ -1,7 +1,17 @@
 const messageInput = document.querySelector(".message-input");
 const chatBody = document.querySelector(".chatbot-body");
 const sendMessageBtn = document.querySelector("#send-message");
-const userData = { message: null }
+const fileInput = document.querySelector("#file-input");
+const fileUploadWrapper = document.querySelector(".file-upload-wrapper");
+
+const userData = {
+    message: null,
+    file: {
+        data: null,
+        mime_type: null
+    }
+
+}
 
 //API Setup
 const API_KEY = "AIzaSyDiRFa8FXwkN0Oz5Tbi0dBOUBQrM7iU1A4";
@@ -21,7 +31,11 @@ const handleOutgoingMessage = (e) => {
     messageInput.value = "";
 
     //Create and Display user message
-    const messageContent = `<div class="message-text"></div>`;
+    const messageContent = `<div class="message-text"></div>
+                            ${userData.file.data ? `<img src = "data: ${userData.file.mime_type};base64,
+                            ${userData.file.data}" class="attachment"/>` : ""}`;
+
+
     const outgoingMessageDiv = createMessageElement(messageContent, "user-message");
     outgoingMessageDiv.querySelector(".message-text").textContent = userData.message; //alternate for messagecontent above
     chatBody.appendChild(outgoingMessageDiv);
@@ -57,7 +71,8 @@ const generateBotResponse = async (incomingMessageDiv) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             contents: [{
-                parts: [{ text: userData.message }]
+                parts: [{ text: userData.message }, ...(userData.file.data ? [{ inline_data: userData.file }] :
+                    [])]
             }]
         })
     }
@@ -72,14 +87,17 @@ const generateBotResponse = async (incomingMessageDiv) => {
         const apiResponseText = data.candidates[0].content.parts[0].text.replace(/\*\*(.*?)\*\*/g, "$1").trim();
         messageElement.innerText = apiResponseText;
     } catch (error) {
-        console.log(error)
+        console.log(error);
+        messageElement.innerText = error.message;
+        messageElement.style.color = "#ff0000";
     } finally {
+        //Reset userData file, remove the thinking indicator and scroll chat to bottom
+        userData.file = {};
         incomingMessageDiv.classList.remove("thinking");
         chatBody.scrollTo({ top: chatBody.scrollHeight, behavior: "smooth" });
 
     }
 }
-
 
 messageInput.addEventListener("keydown", (e) => {
     const userMessage = e.target.value.trim();
@@ -89,4 +107,33 @@ messageInput.addEventListener("keydown", (e) => {
     }
 });
 
+
+//Handle file input change
+fileInput.addEventListener("change", () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        //fileUploadWrapper.querySelector("img").src = e.target.result;
+        //fileUploadWrapper.classList.add("file-uploaded")
+        const base64String = e.target.result.split(",")[1];
+
+        //File data stored in the userData
+        userData.file = {
+            data: base64String,
+            mime_type: file.type
+        }
+
+        //console.log(userData);
+        fileInput.value = "";
+    }
+
+    reader.readAsDataURL(file);
+});
+
+//const picker = new EmojiMart.Picker(pickerOptions)
+
 sendMessageBtn.addEventListener("click", (e) => handleOutgoingMessage(e))
+
+document.querySelector("#file-upload").addEventListener("click", () => fileInput.click());

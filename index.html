@@ -35,12 +35,16 @@
 
                 <div class="chat-controls">
                     <button type="button" class="material-symbols-rounded">sentiment_satisfied</button>
-                    <button type="button" class="material-symbols-rounded">attach_file</button>
+                    <div class="file-upload-wrapper">
+                        <input type="file" accept="images/*" id="file-input" hidden>
+                        <button type="button" id="file-upload" class="material-symbols-rounded">attach_file</button>
+                    </div>
                     <button type="submit" class="material-symbols-rounded" id="send-message">arrow_upward</button>
                 </div>
             </form>
         </div>
     </div>
     <script src="scripts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
 </body>
 </html>

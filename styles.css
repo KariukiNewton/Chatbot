@@ -74,6 +74,8 @@ body {
     margin-bottom: 10px;
     overflow-y: auto;
     flex-direction: column;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(211, 197, 223) transparent;
 }
 
 .chatbot-body .message {
@@ -118,6 +120,12 @@ body {
     border-radius: 13px 13px 3px 13px;
     color: white;
     background: rgb(115, 78, 172);
+}
+
+.chatbot-body .user-message .attachment {
+    width: 50%;
+    margin-top: -6px;
+    border-radius: 10px;
 }
 
 .chatbot-body .bot-message .thinking-indicator {
@@ -239,4 +247,24 @@ body {
 
 .chat-form .chat-controls button:hover {
     background: #EEEEFF;
+}
+
+.chat-form .file-upload-wrapper {
+    height: 35px;
+    width: 35px;
+    position: relative;
+}
+
+.chat-form .file-upload-wrapper img {
+    position: absolute;
+    display: none;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.chat-form .file-upload-wrapper .file-uploaded img {
+    display: block;
+
 }
